@@ -36,17 +36,24 @@ func (u *User) Insert(ctx context.Context, db DB) error {
 	case u._deleted: // deleted
 		return logerror(&ErrInsertFailed{ErrMarkedForDeletion})
 	}
-	// insert (manual)
+	// insert (primary key generated and returned by database)
 	const sqlstr = `INSERT INTO captureamoment.user (` +
-		`UserID, FirstName, LastName, Email, Password` +
+		`FirstName, LastName, Email, Password` +
 		`) VALUES (` +
-		`?, ?, ?, ?, ?` +
+		`?, ?, ?, ?` +
 		`)`
 	// run
-	logf(sqlstr, u.UserID, u.FirstName, u.LastName, u.Email, u.Password)
-	if _, err := db.ExecContext(ctx, sqlstr, u.UserID, u.FirstName, u.LastName, u.Email, u.Password); err != nil {
+	logf(sqlstr, u.FirstName, u.LastName, u.Email, u.Password)
+	res, err := db.ExecContext(ctx, sqlstr, u.FirstName, u.LastName, u.Email, u.Password)
+	if err != nil {
 		return logerror(err)
 	}
+	// retrieve id
+	id, err := res.LastInsertId()
+	if err != nil {
+		return logerror(err)
+	} // set primary key
+	u.UserID = int(id)
 	// set exists
 	u._exists = true
 	return nil
@@ -93,7 +100,7 @@ func (u *User) Upsert(ctx context.Context, db DB) error {
 		`?, ?, ?, ?, ?` +
 		`)` +
 		` ON DUPLICATE KEY UPDATE ` +
-		`UserID = VALUES(UserID), FirstName = VALUES(FirstName), LastName = VALUES(LastName), Email = VALUES(Email), Password = VALUES(Password)`
+		`FirstName = VALUES(FirstName), LastName = VALUES(LastName), Email = VALUES(Email), Password = VALUES(Password)`
 	// run
 	logf(sqlstr, u.UserID, u.FirstName, u.LastName, u.Email, u.Password)
 	if _, err := db.ExecContext(ctx, sqlstr, u.UserID, u.FirstName, u.LastName, u.Email, u.Password); err != nil {
@@ -123,26 +130,6 @@ func (u *User) Delete(ctx context.Context, db DB) error {
 	// set deleted
 	u._deleted = true
 	return nil
-}
-
-// UserByUserID retrieves a row from 'captureamoment.user' as a User.
-//
-// Generated from index 'UserID_UNIQUE'.
-func UserByUserID(ctx context.Context, db DB, userID int) (*User, error) {
-	// query
-	const sqlstr = `SELECT ` +
-		`UserID, FirstName, LastName, Email, Password ` +
-		`FROM captureamoment.user ` +
-		`WHERE UserID = ?`
-	// run
-	logf(sqlstr, userID)
-	u := User{
-		_exists: true,
-	}
-	if err := db.QueryRowContext(ctx, sqlstr, userID).Scan(&u.UserID, &u.FirstName, &u.LastName, &u.Email, &u.Password); err != nil {
-		return nil, logerror(err)
-	}
-	return &u, nil
 }
 
 // UserByUserID retrieves a row from 'captureamoment.user' as a User.

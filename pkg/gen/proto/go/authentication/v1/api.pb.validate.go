@@ -69,11 +69,50 @@ func (m *CreateAccountRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	// no validation rules for Password
+	if m.GetPassword() == nil {
+		err := CreateAccountRequestValidationError{
+			field:  "Password",
+			reason: "value is required",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for FirstName
+	if a := m.GetPassword(); a != nil {
 
-	// no validation rules for LastName
+	}
+
+	if m.GetFirstName() == nil {
+		err := CreateAccountRequestValidationError{
+			field:  "FirstName",
+			reason: "value is required",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if a := m.GetFirstName(); a != nil {
+
+	}
+
+	if m.GetLastName() == nil {
+		err := CreateAccountRequestValidationError{
+			field:  "LastName",
+			reason: "value is required",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if a := m.GetLastName(); a != nil {
+
+	}
 
 	if len(errors) > 0 {
 		return CreateAccountRequestMultiError(errors)

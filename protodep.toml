@@ -1,0 +1,6 @@
+proto_outdir = "./vendor.proto"
+
+[[dependencies]]
+    target = "github.com/envoyproxy/protoc-gen-validate/validate/validate.proto"
+    revision = "v0.6.2"
+    path = "protoc-gen-validate/validate/validate.proto"

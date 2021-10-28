@@ -15,6 +15,8 @@ var jspb = require('google-protobuf');
 var goog = jspb;
 var global = Function('return this')();
 
+var protoc$gen$validate_validate_validate_pb = require('../../protoc-gen-validate/validate/validate_pb.js');
+goog.object.extend(proto, protoc$gen$validate_validate_validate_pb);
 goog.exportSymbol('proto.authentication.v1.CreateAccountRequest', null, global);
 goog.exportSymbol('proto.authentication.v1.CreateAccountResponse', null, global);
 goog.exportSymbol('proto.authentication.v1.LoginRequest', null, global);

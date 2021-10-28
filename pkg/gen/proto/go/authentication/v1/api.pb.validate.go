@@ -69,10 +69,10 @@ func (m *CreateAccountRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if m.GetPassword() == nil {
+	if utf8.RuneCountInString(m.GetPassword()) < 1 {
 		err := CreateAccountRequestValidationError{
 			field:  "Password",
-			reason: "value is required",
+			reason: "value length must be at least 1 runes",
 		}
 		if !all {
 			return err
@@ -80,14 +80,10 @@ func (m *CreateAccountRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if a := m.GetPassword(); a != nil {
-
-	}
-
-	if m.GetFirstName() == nil {
+	if utf8.RuneCountInString(m.GetFirstName()) < 1 {
 		err := CreateAccountRequestValidationError{
 			field:  "FirstName",
-			reason: "value is required",
+			reason: "value length must be at least 1 runes",
 		}
 		if !all {
 			return err
@@ -95,23 +91,15 @@ func (m *CreateAccountRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if a := m.GetFirstName(); a != nil {
-
-	}
-
-	if m.GetLastName() == nil {
+	if utf8.RuneCountInString(m.GetLastName()) < 1 {
 		err := CreateAccountRequestValidationError{
 			field:  "LastName",
-			reason: "value is required",
+			reason: "value length must be at least 1 runes",
 		}
 		if !all {
 			return err
 		}
 		errors = append(errors, err)
-	}
-
-	if a := m.GetLastName(); a != nil {
-
 	}
 
 	if len(errors) > 0 {

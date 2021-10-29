@@ -15,6 +15,8 @@
 const grpc = {};
 grpc.web = require('grpc-web');
 
+
+var protoc$gen$validate_validate_validate_pb = require('../../protoc-gen-validate/validate/validate_pb.js')
 const proto = {};
 proto.authentication = {};
 proto.authentication.v1 = require('./api_pb.js');

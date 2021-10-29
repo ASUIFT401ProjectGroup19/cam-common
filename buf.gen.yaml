@@ -14,3 +14,6 @@ plugins:
 - name: grpc-web
   out: pkg/gen/proto/js
   opt: import_style=commonjs,mode=grpcwebtext
+- name: validate
+  out: pkg/gen/proto/go
+  opt: lang=go,paths=source_relative

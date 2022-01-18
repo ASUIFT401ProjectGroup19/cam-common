@@ -37,17 +37,24 @@ func (c *Comment) Insert(ctx context.Context, db DB) error {
 	case c._deleted: // deleted
 		return logerror(&ErrInsertFailed{ErrMarkedForDeletion})
 	}
-	// insert (manual)
+	// insert (primary key generated and returned by database)
 	const sqlstr = `INSERT INTO captureamoment.comment (` +
-		`CommentID, CommentText, Liked, UserID, PostID` +
+		`CommentText, Liked, UserID, PostID` +
 		`) VALUES (` +
-		`?, ?, ?, ?, ?` +
+		`?, ?, ?, ?` +
 		`)`
 	// run
-	logf(sqlstr, c.CommentID, c.CommentText, c.Liked, c.UserID, c.PostID)
-	if _, err := db.ExecContext(ctx, sqlstr, c.CommentID, c.CommentText, c.Liked, c.UserID, c.PostID); err != nil {
+	logf(sqlstr, c.CommentText, c.Liked, c.UserID, c.PostID)
+	res, err := db.ExecContext(ctx, sqlstr, c.CommentText, c.Liked, c.UserID, c.PostID)
+	if err != nil {
 		return logerror(err)
 	}
+	// retrieve id
+	id, err := res.LastInsertId()
+	if err != nil {
+		return logerror(err)
+	} // set primary key
+	c.CommentID = int(id)
 	// set exists
 	c._exists = true
 	return nil
@@ -94,7 +101,7 @@ func (c *Comment) Upsert(ctx context.Context, db DB) error {
 		`?, ?, ?, ?, ?` +
 		`)` +
 		` ON DUPLICATE KEY UPDATE ` +
-		`CommentID = VALUES(CommentID), CommentText = VALUES(CommentText), Liked = VALUES(Liked), UserID = VALUES(UserID), PostID = VALUES(PostID)`
+		`CommentText = VALUES(CommentText), Liked = VALUES(Liked), UserID = VALUES(UserID), PostID = VALUES(PostID)`
 	// run
 	logf(sqlstr, c.CommentID, c.CommentText, c.Liked, c.UserID, c.PostID)
 	if _, err := db.ExecContext(ctx, sqlstr, c.CommentID, c.CommentText, c.Liked, c.UserID, c.PostID); err != nil {

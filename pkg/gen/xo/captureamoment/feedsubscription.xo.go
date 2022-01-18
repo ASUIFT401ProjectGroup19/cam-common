@@ -33,17 +33,24 @@ func (f *Feedsubscription) Insert(ctx context.Context, db DB) error {
 	case f._deleted: // deleted
 		return logerror(&ErrInsertFailed{ErrMarkedForDeletion})
 	}
-	// insert (manual)
+	// insert (primary key generated and returned by database)
 	const sqlstr = `INSERT INTO captureamoment.feedsubscription (` +
-		`SubscriptionID, UserID` +
+		`UserID` +
 		`) VALUES (` +
-		`?, ?` +
+		`?` +
 		`)`
 	// run
-	logf(sqlstr, f.SubscriptionID, f.UserID)
-	if _, err := db.ExecContext(ctx, sqlstr, f.SubscriptionID, f.UserID); err != nil {
+	logf(sqlstr, f.UserID)
+	res, err := db.ExecContext(ctx, sqlstr, f.UserID)
+	if err != nil {
 		return logerror(err)
 	}
+	// retrieve id
+	id, err := res.LastInsertId()
+	if err != nil {
+		return logerror(err)
+	} // set primary key
+	f.SubscriptionID = int(id)
 	// set exists
 	f._exists = true
 	return nil
@@ -90,7 +97,7 @@ func (f *Feedsubscription) Upsert(ctx context.Context, db DB) error {
 		`?, ?` +
 		`)` +
 		` ON DUPLICATE KEY UPDATE ` +
-		`SubscriptionID = VALUES(SubscriptionID), UserID = VALUES(UserID)`
+		`UserID = VALUES(UserID)`
 	// run
 	logf(sqlstr, f.SubscriptionID, f.UserID)
 	if _, err := db.ExecContext(ctx, sqlstr, f.SubscriptionID, f.UserID); err != nil {

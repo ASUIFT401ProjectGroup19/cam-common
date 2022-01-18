@@ -35,17 +35,24 @@ func (m *Media) Insert(ctx context.Context, db DB) error {
 	case m._deleted: // deleted
 		return logerror(&ErrInsertFailed{ErrMarkedForDeletion})
 	}
-	// insert (manual)
+	// insert (primary key generated and returned by database)
 	const sqlstr = `INSERT INTO captureamoment.media (` +
-		`MediaID, MediaLink, postid` +
+		`MediaLink, postid` +
 		`) VALUES (` +
-		`?, ?, ?` +
+		`?, ?` +
 		`)`
 	// run
-	logf(sqlstr, m.MediaID, m.MediaLink, m.Postid)
-	if _, err := db.ExecContext(ctx, sqlstr, m.MediaID, m.MediaLink, m.Postid); err != nil {
+	logf(sqlstr, m.MediaLink, m.Postid)
+	res, err := db.ExecContext(ctx, sqlstr, m.MediaLink, m.Postid)
+	if err != nil {
 		return logerror(err)
 	}
+	// retrieve id
+	id, err := res.LastInsertId()
+	if err != nil {
+		return logerror(err)
+	} // set primary key
+	m.MediaID = int(id)
 	// set exists
 	m._exists = true
 	return nil
@@ -92,7 +99,7 @@ func (m *Media) Upsert(ctx context.Context, db DB) error {
 		`?, ?, ?` +
 		`)` +
 		` ON DUPLICATE KEY UPDATE ` +
-		`MediaID = VALUES(MediaID), MediaLink = VALUES(MediaLink), postid = VALUES(postid)`
+		`MediaLink = VALUES(MediaLink), postid = VALUES(postid)`
 	// run
 	logf(sqlstr, m.MediaID, m.MediaLink, m.Postid)
 	if _, err := db.ExecContext(ctx, sqlstr, m.MediaID, m.MediaLink, m.Postid); err != nil {

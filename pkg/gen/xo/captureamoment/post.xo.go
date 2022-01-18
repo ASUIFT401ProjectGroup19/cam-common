@@ -37,17 +37,24 @@ func (p *Post) Insert(ctx context.Context, db DB) error {
 	case p._deleted: // deleted
 		return logerror(&ErrInsertFailed{ErrMarkedForDeletion})
 	}
-	// insert (manual)
+	// insert (primary key generated and returned by database)
 	const sqlstr = `INSERT INTO captureamoment.post (` +
-		`PostID, Description, Date, UserID` +
+		`Description, Date, UserID` +
 		`) VALUES (` +
-		`?, ?, ?, ?` +
+		`?, ?, ?` +
 		`)`
 	// run
-	logf(sqlstr, p.PostID, p.Description, p.Date, p.UserID)
-	if _, err := db.ExecContext(ctx, sqlstr, p.PostID, p.Description, p.Date, p.UserID); err != nil {
+	logf(sqlstr, p.Description, p.Date, p.UserID)
+	res, err := db.ExecContext(ctx, sqlstr, p.Description, p.Date, p.UserID)
+	if err != nil {
 		return logerror(err)
 	}
+	// retrieve id
+	id, err := res.LastInsertId()
+	if err != nil {
+		return logerror(err)
+	} // set primary key
+	p.PostID = int(id)
 	// set exists
 	p._exists = true
 	return nil
@@ -94,7 +101,7 @@ func (p *Post) Upsert(ctx context.Context, db DB) error {
 		`?, ?, ?, ?` +
 		`)` +
 		` ON DUPLICATE KEY UPDATE ` +
-		`PostID = VALUES(PostID), Description = VALUES(Description), Date = VALUES(Date), UserID = VALUES(UserID)`
+		`Description = VALUES(Description), Date = VALUES(Date), UserID = VALUES(UserID)`
 	// run
 	logf(sqlstr, p.PostID, p.Description, p.Date, p.UserID)
 	if _, err := db.ExecContext(ctx, sqlstr, p.PostID, p.Description, p.Date, p.UserID); err != nil {

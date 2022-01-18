@@ -29,41 +29,24 @@ buf: toolbox
 grpcurl: toolbox
 	go install github.com/fullstorydev/grpcurl/cmd/grpcurl@latest
 
-protoc: toolbox
-	cd $(TOOLDIR); curl -L -o pb.zip https://github.com/protocolbuffers/protobuf/releases/download/v$(PROTOC_VERSION)/protoc-$(PROTOC_VERSION)-$(OS_TARGET)-$(OS_ARCH).zip
-	cd $(TOOLDIR); unzip -o pb.zip && mv bin/protoc .
-
 protoc-gen-validate: toolbox
 	go install github.com/envoyproxy/protoc-gen-validate@$(PROTOC_GEN_VALIDATE_VERSION)
-
-protoc-go: toolbox
-	go install google.golang.org/protobuf/cmd/protoc-gen-go@$(PROTOC_GEN_GO_VERSION)
-	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@$(PROTOC_GEN_GO_GRPC_VERSION)
-
-protoc-js: toolbox
-	echo https://github.com/grpc/grpc-web/releases/download/$(PROTOC_GEN_GRPC_WEB_VERSION)/protoc-gen-grpc-web-$(PROTOC_GEN_GRPC_WEB_VERSION)-$(OS_TARGET)-$(OS_ARCH)
-	cd $(TOOLDIR); curl -L -o protoc-gen-grpc-web https://github.com/grpc/grpc-web/releases/download/$(PROTOC_GEN_GRPC_WEB_VERSION)/protoc-gen-grpc-web-$(PROTOC_GEN_GRPC_WEB_VERSION)-$(OS_TARGET)-$(OS_ARCH)
-
-protodep: toolbox
-	go install github.com/stormcat24/protodep@$(PROTODEP_VERSION)
 
 xo: toolbox
 	go install github.com/xo/xo@$(XO_VERSION)
 
-prototools: buf protoc protoc-gen-validate protoc-go protoc-js protodep
-
 dbtools: xo
 
-tools: prototools dbtools grpcurl
+prototools: buf protoc-gen-validate
 
-protoreqs: prototools
-	protodep up --use-https -f
+tools: dbtools prototools grpcurl
 
 lint: prototools
-	buf lint proto/
+	buf mod update proto
+	buf lint proto
 
-genproto: protoreqs lint
-	buf generate proto/
+genproto:
+	buf generate proto
 
 gendb: dbtools
 	mkdir -p pkg/gen/xo/captureamoment

@@ -1,19 +1,18 @@
 version: v1
 plugins:
-- name: go
+- remote: buf.build/library/plugins/go
   out: pkg/gen/proto/go
   opt: paths=source_relative
-- name: go-grpc
+- remote: buf.build/library/plugins/go-grpc
   out: pkg/gen/proto/go
   opt:
   - paths=source_relative
   - require_unimplemented_servers=true
-- name: js
-  out: pkg/gen/proto/js
-  opt: import_style=commonjs,binary
-- name: grpc-web
-  out: pkg/gen/proto/js
-  opt: import_style=commonjs,mode=grpcwebtext
+- remote: buf.build/grpc-ecosystem/plugins/grpc-gateway
+  out: pkg/gen/proto/go
+  opt: paths=source_relative
+- remote: buf.build/grpc-ecosystem/plugins/openapiv2
+  out: doc/openapiv2
 - name: validate
   out: pkg/gen/proto/go
   opt: lang=go,paths=source_relative

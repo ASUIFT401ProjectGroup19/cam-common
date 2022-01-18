@@ -513,6 +513,35 @@ func (m *UpdateRequest) validate(all bool) error {
 
 	var errors []error
 
+	if all {
+		switch v := interface{}(m.GetPost()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, UpdateRequestValidationError{
+					field:  "Post",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, UpdateRequestValidationError{
+					field:  "Post",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetPost()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return UpdateRequestValidationError{
+				field:  "Post",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
 	if len(errors) > 0 {
 		return UpdateRequestMultiError(errors)
 	}
@@ -611,6 +640,10 @@ func (m *UpdateResponse) validate(all bool) error {
 	}
 
 	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for Success
 
 	if len(errors) > 0 {
 		return UpdateResponseMultiError(errors)
@@ -711,6 +744,8 @@ func (m *DeleteRequest) validate(all bool) error {
 
 	var errors []error
 
+	// no validation rules for Id
+
 	if len(errors) > 0 {
 		return DeleteRequestMultiError(errors)
 	}
@@ -809,6 +844,8 @@ func (m *DeleteResponse) validate(all bool) error {
 	}
 
 	var errors []error
+
+	// no validation rules for Success
 
 	if len(errors) > 0 {
 		return DeleteResponseMultiError(errors)

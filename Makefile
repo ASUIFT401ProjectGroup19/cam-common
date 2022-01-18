@@ -45,7 +45,7 @@ lint: prototools
 	buf mod update proto
 	buf lint proto
 
-genproto:
+genproto: lint
 	buf generate proto
 
 gendb: dbtools

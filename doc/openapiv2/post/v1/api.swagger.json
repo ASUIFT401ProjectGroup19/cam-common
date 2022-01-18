@@ -215,7 +215,10 @@
           "type": "string"
         },
         "media": {
-          "$ref": "#/definitions/v1Media"
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1Media"
+          }
         }
       }
     },

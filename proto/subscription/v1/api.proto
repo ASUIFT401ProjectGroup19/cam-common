@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package subscription.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "github.com/ASUIFT401ProjectGroup19/cam-common/pkg/gen/proto/go/subscription/v1;subscriptionv1";
+
+service SubscriptionService {
+  rpc Follow(FollowRequest) returns (FollowResponse){
+    option (google.api.http) = {
+      put: "/subscription/v1/follow/{id}"
+    };
+  }
+  rpc Unfollow(UnfollowRequest) returns (UnfollowResponse){
+    option (google.api.http) = {
+      put: "/subscription/v1/unfollow/{id}"
+    };
+  }
+}
+
+message FollowRequest{
+  int32 id = 1;
+}
+
+message FollowResponse{}
+
+message UnfollowRequest{
+  int32 id = 1;
+}
+
+message UnfollowResponse{}

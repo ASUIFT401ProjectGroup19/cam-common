@@ -221,16 +221,16 @@ func CommentByCommentID(ctx context.Context, db DB, commentID int) (*Comment, er
 	return &c, nil
 }
 
-// Post returns the Post associated with the Comment's (PostID).
-//
-// Generated from foreign key 'PostID'.
-func (c *Comment) Post(ctx context.Context, db DB) (*Post, error) {
-	return PostByPostID(ctx, db, c.PostID)
-}
-
 // User returns the User associated with the Comment's (UserID).
 //
-// Generated from foreign key 'UserID'.
+// Generated from foreign key 'commen_UserID_fk'.
 func (c *Comment) User(ctx context.Context, db DB) (*User, error) {
 	return UserByUserID(ctx, db, c.UserID)
+}
+
+// Post returns the Post associated with the Comment's (PostID).
+//
+// Generated from foreign key 'comment_PostID_fk'.
+func (c *Comment) Post(ctx context.Context, db DB) (*Post, error) {
+	return PostByPostID(ctx, db, c.PostID)
 }

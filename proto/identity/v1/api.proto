@@ -20,13 +20,18 @@ service IdentityService {
       body: "*"
     };
   }
+  rpc Refresh(RefreshRequest) returns (RefreshResponse){
+    option(google.api.http) = {
+      get: "/identity/v1/refresh"
+    };
+  }
 }
 
 message CreateAccountRequest {
-  string user_name = 1 [(validate.rules).string.email = true];
-  string password = 2 [(validate.rules).string.min_len = 1];
-  string first_name = 3 [(validate.rules).string.min_len = 1];
-  string last_name = 4 [(validate.rules).string.min_len = 1];
+  string user_name = 1 [ (validate.rules).string.email = true ];
+  string password = 2 [ (validate.rules).string.min_len = 1 ];
+  string first_name = 3 [ (validate.rules).string.min_len = 1 ];
+  string last_name = 4 [ (validate.rules).string.min_len = 1 ];
 }
 
 message CreateAccountResponse {
@@ -39,5 +44,11 @@ message LoginRequest{
 }
 
 message LoginResponse{
+  string token = 1;
+}
+
+message RefreshRequest {}
+
+message RefreshResponse {
   string token = 1;
 }

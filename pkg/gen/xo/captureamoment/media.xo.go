@@ -11,7 +11,7 @@ import (
 type Media struct {
 	MediaID   int            `json:"MediaID"`   // MediaID
 	MediaLink sql.NullString `json:"MediaLink"` // MediaLink
-	Postid    int            `json:"postid"`    // postid
+	PostID    int            `json:"PostID"`    // PostID
 	// xo fields
 	_exists, _deleted bool
 }
@@ -37,13 +37,13 @@ func (m *Media) Insert(ctx context.Context, db DB) error {
 	}
 	// insert (primary key generated and returned by database)
 	const sqlstr = `INSERT INTO captureamoment.media (` +
-		`MediaLink, postid` +
+		`MediaLink, PostID` +
 		`) VALUES (` +
 		`?, ?` +
 		`)`
 	// run
-	logf(sqlstr, m.MediaLink, m.Postid)
-	res, err := db.ExecContext(ctx, sqlstr, m.MediaLink, m.Postid)
+	logf(sqlstr, m.MediaLink, m.PostID)
+	res, err := db.ExecContext(ctx, sqlstr, m.MediaLink, m.PostID)
 	if err != nil {
 		return logerror(err)
 	}
@@ -68,11 +68,11 @@ func (m *Media) Update(ctx context.Context, db DB) error {
 	}
 	// update with primary key
 	const sqlstr = `UPDATE captureamoment.media SET ` +
-		`MediaLink = ?, postid = ? ` +
+		`MediaLink = ?, PostID = ? ` +
 		`WHERE MediaID = ?`
 	// run
-	logf(sqlstr, m.MediaLink, m.Postid, m.MediaID)
-	if _, err := db.ExecContext(ctx, sqlstr, m.MediaLink, m.Postid, m.MediaID); err != nil {
+	logf(sqlstr, m.MediaLink, m.PostID, m.MediaID)
+	if _, err := db.ExecContext(ctx, sqlstr, m.MediaLink, m.PostID, m.MediaID); err != nil {
 		return logerror(err)
 	}
 	return nil
@@ -94,15 +94,15 @@ func (m *Media) Upsert(ctx context.Context, db DB) error {
 	}
 	// upsert
 	const sqlstr = `INSERT INTO captureamoment.media (` +
-		`MediaID, MediaLink, postid` +
+		`MediaID, MediaLink, PostID` +
 		`) VALUES (` +
 		`?, ?, ?` +
 		`)` +
 		` ON DUPLICATE KEY UPDATE ` +
-		`MediaLink = VALUES(MediaLink), postid = VALUES(postid)`
+		`MediaLink = VALUES(MediaLink), PostID = VALUES(PostID)`
 	// run
-	logf(sqlstr, m.MediaID, m.MediaLink, m.Postid)
-	if _, err := db.ExecContext(ctx, sqlstr, m.MediaID, m.MediaLink, m.Postid); err != nil {
+	logf(sqlstr, m.MediaID, m.MediaLink, m.PostID)
+	if _, err := db.ExecContext(ctx, sqlstr, m.MediaID, m.MediaLink, m.PostID); err != nil {
 		return logerror(err)
 	}
 	// set exists
@@ -131,38 +131,18 @@ func (m *Media) Delete(ctx context.Context, db DB) error {
 	return nil
 }
 
-// MediaByMediaID retrieves a row from 'captureamoment.media' as a Media.
+// MediaByPostID retrieves a row from 'captureamoment.media' as a Media.
 //
-// Generated from index 'media_MediaID_pkey'.
-func MediaByMediaID(ctx context.Context, db DB, mediaID int) (*Media, error) {
+// Generated from index 'PostID_idx'.
+func MediaByPostID(ctx context.Context, db DB, postID int) ([]*Media, error) {
 	// query
 	const sqlstr = `SELECT ` +
-		`MediaID, MediaLink, postid ` +
+		`MediaID, MediaLink, PostID ` +
 		`FROM captureamoment.media ` +
-		`WHERE MediaID = ?`
+		`WHERE PostID = ?`
 	// run
-	logf(sqlstr, mediaID)
-	m := Media{
-		_exists: true,
-	}
-	if err := db.QueryRowContext(ctx, sqlstr, mediaID).Scan(&m.MediaID, &m.MediaLink, &m.Postid); err != nil {
-		return nil, logerror(err)
-	}
-	return &m, nil
-}
-
-// MediaByPostid retrieves a row from 'captureamoment.media' as a Media.
-//
-// Generated from index 'mediapost_idx'.
-func MediaByPostid(ctx context.Context, db DB, postid int) ([]*Media, error) {
-	// query
-	const sqlstr = `SELECT ` +
-		`MediaID, MediaLink, postid ` +
-		`FROM captureamoment.media ` +
-		`WHERE postid = ?`
-	// run
-	logf(sqlstr, postid)
-	rows, err := db.QueryContext(ctx, sqlstr, postid)
+	logf(sqlstr, postID)
+	rows, err := db.QueryContext(ctx, sqlstr, postID)
 	if err != nil {
 		return nil, logerror(err)
 	}
@@ -174,7 +154,7 @@ func MediaByPostid(ctx context.Context, db DB, postid int) ([]*Media, error) {
 			_exists: true,
 		}
 		// scan
-		if err := rows.Scan(&m.MediaID, &m.MediaLink, &m.Postid); err != nil {
+		if err := rows.Scan(&m.MediaID, &m.MediaLink, &m.PostID); err != nil {
 			return nil, logerror(err)
 		}
 		res = append(res, &m)
@@ -185,9 +165,29 @@ func MediaByPostid(ctx context.Context, db DB, postid int) ([]*Media, error) {
 	return res, nil
 }
 
-// Post returns the Post associated with the Media's (Postid).
+// MediaByMediaID retrieves a row from 'captureamoment.media' as a Media.
 //
-// Generated from foreign key 'mediapost'.
+// Generated from index 'media_MediaID_pkey'.
+func MediaByMediaID(ctx context.Context, db DB, mediaID int) (*Media, error) {
+	// query
+	const sqlstr = `SELECT ` +
+		`MediaID, MediaLink, PostID ` +
+		`FROM captureamoment.media ` +
+		`WHERE MediaID = ?`
+	// run
+	logf(sqlstr, mediaID)
+	m := Media{
+		_exists: true,
+	}
+	if err := db.QueryRowContext(ctx, sqlstr, mediaID).Scan(&m.MediaID, &m.MediaLink, &m.PostID); err != nil {
+		return nil, logerror(err)
+	}
+	return &m, nil
+}
+
+// Post returns the Post associated with the Media's (PostID).
+//
+// Generated from foreign key 'media_PostID_fk'.
 func (m *Media) Post(ctx context.Context, db DB) (*Post, error) {
-	return PostByPostID(ctx, db, m.Postid)
+	return PostByPostID(ctx, db, m.PostID)
 }

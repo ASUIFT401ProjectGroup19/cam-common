@@ -79,6 +79,28 @@
           "IdentityService"
         ]
       }
+    },
+    "/identity/v1/refresh": {
+      "get": {
+        "operationId": "IdentityService_Refresh",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1RefreshResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "IdentityService"
+        ]
+      }
     }
   },
   "definitions": {
@@ -146,6 +168,14 @@
       }
     },
     "v1LoginResponse": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        }
+      }
+    },
+    "v1RefreshResponse": {
       "type": "object",
       "properties": {
         "token": {

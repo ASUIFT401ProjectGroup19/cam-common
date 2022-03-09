@@ -133,29 +133,9 @@ func (p *Post) Delete(ctx context.Context, db DB) error {
 	return nil
 }
 
-// PostByPostID retrieves a row from 'captureamoment.post' as a Post.
-//
-// Generated from index 'post_PostID_pkey'.
-func PostByPostID(ctx context.Context, db DB, postID int) (*Post, error) {
-	// query
-	const sqlstr = `SELECT ` +
-		`PostID, Description, Date, UserID ` +
-		`FROM captureamoment.post ` +
-		`WHERE PostID = ?`
-	// run
-	logf(sqlstr, postID)
-	p := Post{
-		_exists: true,
-	}
-	if err := db.QueryRowContext(ctx, sqlstr, postID).Scan(&p.PostID, &p.Description, &p.Date, &p.UserID); err != nil {
-		return nil, logerror(err)
-	}
-	return &p, nil
-}
-
 // PostByUserID retrieves a row from 'captureamoment.post' as a Post.
 //
-// Generated from index 'postuser_idx'.
+// Generated from index 'UserID_idx'.
 func PostByUserID(ctx context.Context, db DB, userID int) ([]*Post, error) {
 	// query
 	const sqlstr = `SELECT ` +
@@ -187,9 +167,29 @@ func PostByUserID(ctx context.Context, db DB, userID int) ([]*Post, error) {
 	return res, nil
 }
 
+// PostByPostID retrieves a row from 'captureamoment.post' as a Post.
+//
+// Generated from index 'post_PostID_pkey'.
+func PostByPostID(ctx context.Context, db DB, postID int) (*Post, error) {
+	// query
+	const sqlstr = `SELECT ` +
+		`PostID, Description, Date, UserID ` +
+		`FROM captureamoment.post ` +
+		`WHERE PostID = ?`
+	// run
+	logf(sqlstr, postID)
+	p := Post{
+		_exists: true,
+	}
+	if err := db.QueryRowContext(ctx, sqlstr, postID).Scan(&p.PostID, &p.Description, &p.Date, &p.UserID); err != nil {
+		return nil, logerror(err)
+	}
+	return &p, nil
+}
+
 // User returns the User associated with the Post's (UserID).
 //
-// Generated from foreign key 'postuser'.
+// Generated from foreign key 'post_UserID_fk'.
 func (p *Post) User(ctx context.Context, db DB) (*User, error) {
 	return UserByUserID(ctx, db, p.UserID)
 }

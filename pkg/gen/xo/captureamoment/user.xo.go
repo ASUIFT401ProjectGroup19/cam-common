@@ -132,6 +132,40 @@ func (u *User) Delete(ctx context.Context, db DB) error {
 	return nil
 }
 
+// UserByEmail retrieves a row from 'captureamoment.user' as a User.
+//
+// Generated from index 'UserEmail_idx'.
+func UserByEmail(ctx context.Context, db DB, email string) ([]*User, error) {
+	// query
+	const sqlstr = `SELECT ` +
+		`UserID, FirstName, LastName, Email, Password ` +
+		`FROM captureamoment.user ` +
+		`WHERE Email = ?`
+	// run
+	logf(sqlstr, email)
+	rows, err := db.QueryContext(ctx, sqlstr, email)
+	if err != nil {
+		return nil, logerror(err)
+	}
+	defer rows.Close()
+	// process
+	var res []*User
+	for rows.Next() {
+		u := User{
+			_exists: true,
+		}
+		// scan
+		if err := rows.Scan(&u.UserID, &u.FirstName, &u.LastName, &u.Email, &u.Password); err != nil {
+			return nil, logerror(err)
+		}
+		res = append(res, &u)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, logerror(err)
+	}
+	return res, nil
+}
+
 // UserByUserID retrieves a row from 'captureamoment.user' as a User.
 //
 // Generated from index 'user_UserID_pkey'.

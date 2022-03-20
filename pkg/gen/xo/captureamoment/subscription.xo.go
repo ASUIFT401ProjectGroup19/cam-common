@@ -126,10 +126,44 @@ func SubscriptionByUserIDFollowedUserID(ctx context.Context, db DB, userID, foll
 	return &s, nil
 }
 
+// SubscriptionByUserID retrieves a row from 'captureamoment.subscription' as a Subscription.
+//
+// Generated from index 'subscription_UserID_fk'.
+func SubscriptionByUserID(ctx context.Context, db DB, userID int) ([]*Subscription, error) {
+	// query
+	const sqlstr = `SELECT ` +
+		`UserID, FollowedUserID ` +
+		`FROM captureamoment.subscription ` +
+		`WHERE UserID = ?`
+	// run
+	logf(sqlstr, userID)
+	rows, err := db.QueryContext(ctx, sqlstr, userID)
+	if err != nil {
+		return nil, logerror(err)
+	}
+	defer rows.Close()
+	// process
+	var res []*Subscription
+	for rows.Next() {
+		s := Subscription{
+			_exists: true,
+		}
+		// scan
+		if err := rows.Scan(&s.UserID, &s.FollowedUserID); err != nil {
+			return nil, logerror(err)
+		}
+		res = append(res, &s)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, logerror(err)
+	}
+	return res, nil
+}
+
 // User returns the User associated with the Subscription's (FollowedUserID).
 //
 // Generated from foreign key 'subscription_FollowedID_fk'.
-func (s *Subscription) User(ctx context.Context, db DB) (*User, error) {
+func (s *Subscription) FollowedUser(ctx context.Context, db DB) (*User, error) {
 	return UserByUserID(ctx, db, s.FollowedUserID)
 }
 

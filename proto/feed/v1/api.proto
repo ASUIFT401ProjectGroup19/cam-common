@@ -3,22 +3,37 @@ syntax = "proto3";
 package feed.v1;
 
 import "google/api/annotations.proto";
-
 import "post/v1/post.proto";
 
 option go_package = "github.com/ASUIFT401ProjectGroup19/cam-common/pkg/gen/proto/go/feed/v1;feedv1";
 
 service FeedService {
-  rpc Next(NextRequest) returns (NextResponse){
+  rpc Feed(FeedRequest) returns (FeedResponse){
     option (google.api.http) = {
-      get: "/feed/v1/next/{id}"
+      get: "/feed/v1"
+    };
+  }
+  rpc All(AllRequest) returns (AllResponse){
+    option(google.api.http) = {
+      get: "/feed/v1/all"
     };
   }
 }
 
-message NextRequest{
-  int32 id = 1;
+message FeedRequest{
+  int32 page = 1;
+  int32 batch_size = 2;
 }
-message NextResponse{
-  post.v1.Post post = 1;
+
+message FeedResponse{
+  repeated post.v1.Post posts = 1;
+}
+
+message AllRequest{
+  int32 page = 1;
+  int32 batch_size = 2;
+}
+
+message AllResponse{
+  repeated post.v1.Post posts = 1;
 }

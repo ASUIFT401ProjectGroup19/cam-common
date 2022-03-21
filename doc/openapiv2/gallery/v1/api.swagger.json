@@ -1,12 +1,12 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "feed/v1/api.proto",
+    "title": "gallery/v1/api.proto",
     "version": "version not set"
   },
   "tags": [
     {
-      "name": "FeedService"
+      "name": "GalleryService"
     }
   ],
   "consumes": [
@@ -16,14 +16,14 @@
     "application/json"
   ],
   "paths": {
-    "/feed/v1": {
+    "/gallery/v1": {
       "get": {
-        "operationId": "FeedService_Feed",
+        "operationId": "GalleryService_Gallery",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1FeedResponse"
+              "$ref": "#/definitions/v1GalleryResponse"
             }
           },
           "default": {
@@ -47,40 +47,9 @@
             "required": false,
             "type": "integer",
             "format": "int32"
-          }
-        ],
-        "tags": [
-          "FeedService"
-        ]
-      }
-    },
-    "/feed/v1/all": {
-      "get": {
-        "operationId": "FeedService_All",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1AllResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
           },
           {
-            "name": "batchSize",
+            "name": "userId",
             "in": "query",
             "required": false,
             "type": "integer",
@@ -88,7 +57,7 @@
           }
         ],
         "tags": [
-          "FeedService"
+          "GalleryService"
         ]
       }
     }
@@ -121,18 +90,7 @@
         }
       }
     },
-    "v1AllResponse": {
-      "type": "object",
-      "properties": {
-        "posts": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/v1Post"
-          }
-        }
-      }
-    },
-    "v1FeedResponse": {
+    "v1GalleryResponse": {
       "type": "object",
       "properties": {
         "posts": {

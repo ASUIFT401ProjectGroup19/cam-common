@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package gallery.v1;
+
+import "google/api/annotations.proto";
+import "post/v1/post.proto";
+
+option go_package = "github.com/ASUIFT401ProjectGroup19/cam-common/pkg/gen/proto/go/gallery/v1;galleryv1";
+
+service GalleryService{
+  rpc Gallery(GalleryRequest) returns (GalleryResponse){
+    option(google.api.http) = {
+      get: "/gallery/v1"
+    };
+  }
+}
+
+message GalleryRequest{
+  int32 page = 1;
+  int32 batch_size = 2;
+  int32 user_id = 3;
+}
+
+message GalleryResponse{
+  repeated post.v1.Post posts = 1;
+}

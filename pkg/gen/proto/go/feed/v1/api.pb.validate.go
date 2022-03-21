@@ -35,42 +35,44 @@ var (
 	_ = sort.Sort
 )
 
-// Validate checks the field values on NextRequest with the rules defined in
+// Validate checks the field values on FeedRequest with the rules defined in
 // the proto definition for this message. If any rules are violated, the first
 // error encountered is returned, or nil if there are no violations.
-func (m *NextRequest) Validate() error {
+func (m *FeedRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on NextRequest with the rules defined in
+// ValidateAll checks the field values on FeedRequest with the rules defined in
 // the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in NextRequestMultiError, or
+// result is a list of violation errors wrapped in FeedRequestMultiError, or
 // nil if none found.
-func (m *NextRequest) ValidateAll() error {
+func (m *FeedRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *NextRequest) validate(all bool) error {
+func (m *FeedRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
 
-	// no validation rules for Id
+	// no validation rules for Page
+
+	// no validation rules for BatchSize
 
 	if len(errors) > 0 {
-		return NextRequestMultiError(errors)
+		return FeedRequestMultiError(errors)
 	}
 	return nil
 }
 
-// NextRequestMultiError is an error wrapping multiple validation errors
-// returned by NextRequest.ValidateAll() if the designated constraints aren't met.
-type NextRequestMultiError []error
+// FeedRequestMultiError is an error wrapping multiple validation errors
+// returned by FeedRequest.ValidateAll() if the designated constraints aren't met.
+type FeedRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m NextRequestMultiError) Error() string {
+func (m FeedRequestMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -79,11 +81,11 @@ func (m NextRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m NextRequestMultiError) AllErrors() []error { return m }
+func (m FeedRequestMultiError) AllErrors() []error { return m }
 
-// NextRequestValidationError is the validation error returned by
-// NextRequest.Validate if the designated constraints aren't met.
-type NextRequestValidationError struct {
+// FeedRequestValidationError is the validation error returned by
+// FeedRequest.Validate if the designated constraints aren't met.
+type FeedRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -91,22 +93,22 @@ type NextRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e NextRequestValidationError) Field() string { return e.field }
+func (e FeedRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e NextRequestValidationError) Reason() string { return e.reason }
+func (e FeedRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e NextRequestValidationError) Cause() error { return e.cause }
+func (e FeedRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e NextRequestValidationError) Key() bool { return e.key }
+func (e FeedRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e NextRequestValidationError) ErrorName() string { return "NextRequestValidationError" }
+func (e FeedRequestValidationError) ErrorName() string { return "FeedRequestValidationError" }
 
 // Error satisfies the builtin error interface
-func (e NextRequestValidationError) Error() string {
+func (e FeedRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -118,14 +120,14 @@ func (e NextRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sNextRequest.%s: %s%s",
+		"invalid %sFeedRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = NextRequestValidationError{}
+var _ error = FeedRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -133,71 +135,76 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = NextRequestValidationError{}
+} = FeedRequestValidationError{}
 
-// Validate checks the field values on NextResponse with the rules defined in
+// Validate checks the field values on FeedResponse with the rules defined in
 // the proto definition for this message. If any rules are violated, the first
 // error encountered is returned, or nil if there are no violations.
-func (m *NextResponse) Validate() error {
+func (m *FeedResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on NextResponse with the rules defined
+// ValidateAll checks the field values on FeedResponse with the rules defined
 // in the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in NextResponseMultiError, or
+// result is a list of violation errors wrapped in FeedResponseMultiError, or
 // nil if none found.
-func (m *NextResponse) ValidateAll() error {
+func (m *FeedResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *NextResponse) validate(all bool) error {
+func (m *FeedResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
 
-	if all {
-		switch v := interface{}(m.GetPost()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, NextResponseValidationError{
-					field:  "Post",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
+	for idx, item := range m.GetPosts() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, FeedResponseValidationError{
+						field:  fmt.Sprintf("Posts[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, FeedResponseValidationError{
+						field:  fmt.Sprintf("Posts[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
 			}
-		case interface{ Validate() error }:
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
-				errors = append(errors, NextResponseValidationError{
-					field:  "Post",
+				return FeedResponseValidationError{
+					field:  fmt.Sprintf("Posts[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
-				})
+				}
 			}
 		}
-	} else if v, ok := interface{}(m.GetPost()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return NextResponseValidationError{
-				field:  "Post",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
+
 	}
 
 	if len(errors) > 0 {
-		return NextResponseMultiError(errors)
+		return FeedResponseMultiError(errors)
 	}
 	return nil
 }
 
-// NextResponseMultiError is an error wrapping multiple validation errors
-// returned by NextResponse.ValidateAll() if the designated constraints aren't met.
-type NextResponseMultiError []error
+// FeedResponseMultiError is an error wrapping multiple validation errors
+// returned by FeedResponse.ValidateAll() if the designated constraints aren't met.
+type FeedResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m NextResponseMultiError) Error() string {
+func (m FeedResponseMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -206,11 +213,11 @@ func (m NextResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m NextResponseMultiError) AllErrors() []error { return m }
+func (m FeedResponseMultiError) AllErrors() []error { return m }
 
-// NextResponseValidationError is the validation error returned by
-// NextResponse.Validate if the designated constraints aren't met.
-type NextResponseValidationError struct {
+// FeedResponseValidationError is the validation error returned by
+// FeedResponse.Validate if the designated constraints aren't met.
+type FeedResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -218,22 +225,22 @@ type NextResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e NextResponseValidationError) Field() string { return e.field }
+func (e FeedResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e NextResponseValidationError) Reason() string { return e.reason }
+func (e FeedResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e NextResponseValidationError) Cause() error { return e.cause }
+func (e FeedResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e NextResponseValidationError) Key() bool { return e.key }
+func (e FeedResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e NextResponseValidationError) ErrorName() string { return "NextResponseValidationError" }
+func (e FeedResponseValidationError) ErrorName() string { return "FeedResponseValidationError" }
 
 // Error satisfies the builtin error interface
-func (e NextResponseValidationError) Error() string {
+func (e FeedResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -245,14 +252,14 @@ func (e NextResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sNextResponse.%s: %s%s",
+		"invalid %sFeedResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = NextResponseValidationError{}
+var _ error = FeedResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -260,4 +267,238 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = NextResponseValidationError{}
+} = FeedResponseValidationError{}
+
+// Validate checks the field values on AllRequest with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *AllRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AllRequest with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in AllRequestMultiError, or
+// nil if none found.
+func (m *AllRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AllRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Page
+
+	// no validation rules for BatchSize
+
+	if len(errors) > 0 {
+		return AllRequestMultiError(errors)
+	}
+	return nil
+}
+
+// AllRequestMultiError is an error wrapping multiple validation errors
+// returned by AllRequest.ValidateAll() if the designated constraints aren't met.
+type AllRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AllRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AllRequestMultiError) AllErrors() []error { return m }
+
+// AllRequestValidationError is the validation error returned by
+// AllRequest.Validate if the designated constraints aren't met.
+type AllRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AllRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AllRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AllRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AllRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AllRequestValidationError) ErrorName() string { return "AllRequestValidationError" }
+
+// Error satisfies the builtin error interface
+func (e AllRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAllRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AllRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AllRequestValidationError{}
+
+// Validate checks the field values on AllResponse with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *AllResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AllResponse with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in AllResponseMultiError, or
+// nil if none found.
+func (m *AllResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AllResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetPosts() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, AllResponseValidationError{
+						field:  fmt.Sprintf("Posts[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, AllResponseValidationError{
+						field:  fmt.Sprintf("Posts[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return AllResponseValidationError{
+					field:  fmt.Sprintf("Posts[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return AllResponseMultiError(errors)
+	}
+	return nil
+}
+
+// AllResponseMultiError is an error wrapping multiple validation errors
+// returned by AllResponse.ValidateAll() if the designated constraints aren't met.
+type AllResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AllResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AllResponseMultiError) AllErrors() []error { return m }
+
+// AllResponseValidationError is the validation error returned by
+// AllResponse.Validate if the designated constraints aren't met.
+type AllResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AllResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AllResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AllResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AllResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AllResponseValidationError) ErrorName() string { return "AllResponseValidationError" }
+
+// Error satisfies the builtin error interface
+func (e AllResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAllResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AllResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AllResponseValidationError{}

@@ -129,12 +129,13 @@ func RegisterIdentityServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/identity.v1.IdentityService/CreateAccount", runtime.WithHTTPPathPattern("/identity/v1/createaccount"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/identity.v1.IdentityService/CreateAccount", runtime.WithHTTPPathPattern("/identity/v1/createaccount"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_IdentityService_CreateAccount_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_IdentityService_CreateAccount_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -152,12 +153,13 @@ func RegisterIdentityServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/identity.v1.IdentityService/Login", runtime.WithHTTPPathPattern("/identity/v1/login"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/identity.v1.IdentityService/Login", runtime.WithHTTPPathPattern("/identity/v1/login"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_IdentityService_Login_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_IdentityService_Login_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -175,12 +177,13 @@ func RegisterIdentityServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/identity.v1.IdentityService/Refresh", runtime.WithHTTPPathPattern("/identity/v1/refresh"))
+		var err error
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/identity.v1.IdentityService/Refresh", runtime.WithHTTPPathPattern("/identity/v1/refresh"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_IdentityService_Refresh_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_IdentityService_Refresh_0(ctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -237,12 +240,13 @@ func RegisterIdentityServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/identity.v1.IdentityService/CreateAccount", runtime.WithHTTPPathPattern("/identity/v1/createaccount"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/identity.v1.IdentityService/CreateAccount", runtime.WithHTTPPathPattern("/identity/v1/createaccount"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_IdentityService_CreateAccount_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_IdentityService_CreateAccount_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -257,12 +261,13 @@ func RegisterIdentityServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/identity.v1.IdentityService/Login", runtime.WithHTTPPathPattern("/identity/v1/login"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/identity.v1.IdentityService/Login", runtime.WithHTTPPathPattern("/identity/v1/login"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_IdentityService_Login_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_IdentityService_Login_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -277,12 +282,13 @@ func RegisterIdentityServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/identity.v1.IdentityService/Refresh", runtime.WithHTTPPathPattern("/identity/v1/refresh"))
+		var err error
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/identity.v1.IdentityService/Refresh", runtime.WithHTTPPathPattern("/identity/v1/refresh"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_IdentityService_Refresh_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_IdentityService_Refresh_0(ctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)

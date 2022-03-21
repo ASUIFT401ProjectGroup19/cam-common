@@ -111,7 +111,7 @@
       }
     },
     "/post/v1/update": {
-      "put": {
+      "patch": {
         "operationId": "PostService_Update",
         "responses": {
           "200": {

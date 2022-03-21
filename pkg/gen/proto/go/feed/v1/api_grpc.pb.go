@@ -18,7 +18,8 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type FeedServiceClient interface {
-	Next(ctx context.Context, in *NextRequest, opts ...grpc.CallOption) (*NextResponse, error)
+	Feed(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error)
+	All(ctx context.Context, in *AllRequest, opts ...grpc.CallOption) (*AllResponse, error)
 }
 
 type feedServiceClient struct {
@@ -29,9 +30,18 @@ func NewFeedServiceClient(cc grpc.ClientConnInterface) FeedServiceClient {
 	return &feedServiceClient{cc}
 }
 
-func (c *feedServiceClient) Next(ctx context.Context, in *NextRequest, opts ...grpc.CallOption) (*NextResponse, error) {
-	out := new(NextResponse)
-	err := c.cc.Invoke(ctx, "/feed.v1.FeedService/Next", in, out, opts...)
+func (c *feedServiceClient) Feed(ctx context.Context, in *FeedRequest, opts ...grpc.CallOption) (*FeedResponse, error) {
+	out := new(FeedResponse)
+	err := c.cc.Invoke(ctx, "/feed.v1.FeedService/Feed", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *feedServiceClient) All(ctx context.Context, in *AllRequest, opts ...grpc.CallOption) (*AllResponse, error) {
+	out := new(AllResponse)
+	err := c.cc.Invoke(ctx, "/feed.v1.FeedService/All", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +52,8 @@ func (c *feedServiceClient) Next(ctx context.Context, in *NextRequest, opts ...g
 // All implementations must embed UnimplementedFeedServiceServer
 // for forward compatibility
 type FeedServiceServer interface {
-	Next(context.Context, *NextRequest) (*NextResponse, error)
+	Feed(context.Context, *FeedRequest) (*FeedResponse, error)
+	All(context.Context, *AllRequest) (*AllResponse, error)
 	mustEmbedUnimplementedFeedServiceServer()
 }
 
@@ -50,8 +61,11 @@ type FeedServiceServer interface {
 type UnimplementedFeedServiceServer struct {
 }
 
-func (UnimplementedFeedServiceServer) Next(context.Context, *NextRequest) (*NextResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Next not implemented")
+func (UnimplementedFeedServiceServer) Feed(context.Context, *FeedRequest) (*FeedResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Feed not implemented")
+}
+func (UnimplementedFeedServiceServer) All(context.Context, *AllRequest) (*AllResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method All not implemented")
 }
 func (UnimplementedFeedServiceServer) mustEmbedUnimplementedFeedServiceServer() {}
 
@@ -66,20 +80,38 @@ func RegisterFeedServiceServer(s grpc.ServiceRegistrar, srv FeedServiceServer) {
 	s.RegisterService(&FeedService_ServiceDesc, srv)
 }
 
-func _FeedService_Next_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NextRequest)
+func _FeedService_Feed_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FeedRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FeedServiceServer).Next(ctx, in)
+		return srv.(FeedServiceServer).Feed(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/feed.v1.FeedService/Next",
+		FullMethod: "/feed.v1.FeedService/Feed",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FeedServiceServer).Next(ctx, req.(*NextRequest))
+		return srv.(FeedServiceServer).Feed(ctx, req.(*FeedRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FeedService_All_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AllRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FeedServiceServer).All(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/feed.v1.FeedService/All",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FeedServiceServer).All(ctx, req.(*AllRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -92,8 +124,12 @@ var FeedService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*FeedServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Next",
-			Handler:    _FeedService_Next_Handler,
+			MethodName: "Feed",
+			Handler:    _FeedService_Feed_Handler,
+		},
+		{
+			MethodName: "All",
+			Handler:    _FeedService_All_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

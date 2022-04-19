@@ -12,9 +12,9 @@ import (
 type Comment struct {
 	CommentID   int            `json:"CommentID"`   // CommentID
 	CommentText sql.NullString `json:"CommentText"` // CommentText
-	Liked       sql.NullInt64  `json:"Liked"`       // Liked
-	UserID      int            `json:"UserID"`      // UserID
+	ParentID    sql.NullInt64  `json:"ParentID"`    // ParentID
 	PostID      int            `json:"PostID"`      // PostID
+	UserID      int            `json:"UserID"`      // UserID
 	// xo fields
 	_exists, _deleted bool
 }
@@ -40,13 +40,13 @@ func (c *Comment) Insert(ctx context.Context, db DB) error {
 	}
 	// insert (primary key generated and returned by database)
 	const sqlstr = `INSERT INTO captureamoment.comment (` +
-		`CommentText, Liked, UserID, PostID` +
+		`CommentText, ParentID, PostID, UserID` +
 		`) VALUES (` +
 		`?, ?, ?, ?` +
 		`)`
 	// run
-	logf(sqlstr, c.CommentText, c.Liked, c.UserID, c.PostID)
-	res, err := db.ExecContext(ctx, sqlstr, c.CommentText, c.Liked, c.UserID, c.PostID)
+	logf(sqlstr, c.CommentText, c.ParentID, c.PostID, c.UserID)
+	res, err := db.ExecContext(ctx, sqlstr, c.CommentText, c.ParentID, c.PostID, c.UserID)
 	if err != nil {
 		return logerror(err)
 	}
@@ -71,11 +71,11 @@ func (c *Comment) Update(ctx context.Context, db DB) error {
 	}
 	// update with primary key
 	const sqlstr = `UPDATE captureamoment.comment SET ` +
-		`CommentText = ?, Liked = ?, UserID = ?, PostID = ? ` +
+		`CommentText = ?, ParentID = ?, PostID = ?, UserID = ? ` +
 		`WHERE CommentID = ?`
 	// run
-	logf(sqlstr, c.CommentText, c.Liked, c.UserID, c.PostID, c.CommentID)
-	if _, err := db.ExecContext(ctx, sqlstr, c.CommentText, c.Liked, c.UserID, c.PostID, c.CommentID); err != nil {
+	logf(sqlstr, c.CommentText, c.ParentID, c.PostID, c.UserID, c.CommentID)
+	if _, err := db.ExecContext(ctx, sqlstr, c.CommentText, c.ParentID, c.PostID, c.UserID, c.CommentID); err != nil {
 		return logerror(err)
 	}
 	return nil
@@ -97,15 +97,15 @@ func (c *Comment) Upsert(ctx context.Context, db DB) error {
 	}
 	// upsert
 	const sqlstr = `INSERT INTO captureamoment.comment (` +
-		`CommentID, CommentText, Liked, UserID, PostID` +
+		`CommentID, CommentText, ParentID, PostID, UserID` +
 		`) VALUES (` +
 		`?, ?, ?, ?, ?` +
 		`)` +
 		` ON DUPLICATE KEY UPDATE ` +
-		`CommentText = VALUES(CommentText), Liked = VALUES(Liked), UserID = VALUES(UserID), PostID = VALUES(PostID)`
+		`CommentText = VALUES(CommentText), ParentID = VALUES(ParentID), PostID = VALUES(PostID), UserID = VALUES(UserID)`
 	// run
-	logf(sqlstr, c.CommentID, c.CommentText, c.Liked, c.UserID, c.PostID)
-	if _, err := db.ExecContext(ctx, sqlstr, c.CommentID, c.CommentText, c.Liked, c.UserID, c.PostID); err != nil {
+	logf(sqlstr, c.CommentID, c.CommentText, c.ParentID, c.PostID, c.UserID)
+	if _, err := db.ExecContext(ctx, sqlstr, c.CommentID, c.CommentText, c.ParentID, c.PostID, c.UserID); err != nil {
 		return logerror(err)
 	}
 	// set exists
@@ -140,7 +140,7 @@ func (c *Comment) Delete(ctx context.Context, db DB) error {
 func CommentByPostID(ctx context.Context, db DB, postID int) ([]*Comment, error) {
 	// query
 	const sqlstr = `SELECT ` +
-		`CommentID, CommentText, Liked, UserID, PostID ` +
+		`CommentID, CommentText, ParentID, PostID, UserID ` +
 		`FROM captureamoment.comment ` +
 		`WHERE PostID = ?`
 	// run
@@ -157,7 +157,7 @@ func CommentByPostID(ctx context.Context, db DB, postID int) ([]*Comment, error)
 			_exists: true,
 		}
 		// scan
-		if err := rows.Scan(&c.CommentID, &c.CommentText, &c.Liked, &c.UserID, &c.PostID); err != nil {
+		if err := rows.Scan(&c.CommentID, &c.CommentText, &c.ParentID, &c.PostID, &c.UserID); err != nil {
 			return nil, logerror(err)
 		}
 		res = append(res, &c)
@@ -174,7 +174,7 @@ func CommentByPostID(ctx context.Context, db DB, postID int) ([]*Comment, error)
 func CommentByUserID(ctx context.Context, db DB, userID int) ([]*Comment, error) {
 	// query
 	const sqlstr = `SELECT ` +
-		`CommentID, CommentText, Liked, UserID, PostID ` +
+		`CommentID, CommentText, ParentID, PostID, UserID ` +
 		`FROM captureamoment.comment ` +
 		`WHERE UserID = ?`
 	// run
@@ -191,7 +191,7 @@ func CommentByUserID(ctx context.Context, db DB, userID int) ([]*Comment, error)
 			_exists: true,
 		}
 		// scan
-		if err := rows.Scan(&c.CommentID, &c.CommentText, &c.Liked, &c.UserID, &c.PostID); err != nil {
+		if err := rows.Scan(&c.CommentID, &c.CommentText, &c.ParentID, &c.PostID, &c.UserID); err != nil {
 			return nil, logerror(err)
 		}
 		res = append(res, &c)
@@ -208,7 +208,7 @@ func CommentByUserID(ctx context.Context, db DB, userID int) ([]*Comment, error)
 func CommentByCommentID(ctx context.Context, db DB, commentID int) (*Comment, error) {
 	// query
 	const sqlstr = `SELECT ` +
-		`CommentID, CommentText, Liked, UserID, PostID ` +
+		`CommentID, CommentText, ParentID, PostID, UserID ` +
 		`FROM captureamoment.comment ` +
 		`WHERE CommentID = ?`
 	// run
@@ -216,10 +216,51 @@ func CommentByCommentID(ctx context.Context, db DB, commentID int) (*Comment, er
 	c := Comment{
 		_exists: true,
 	}
-	if err := db.QueryRowContext(ctx, sqlstr, commentID).Scan(&c.CommentID, &c.CommentText, &c.Liked, &c.UserID, &c.PostID); err != nil {
+	if err := db.QueryRowContext(ctx, sqlstr, commentID).Scan(&c.CommentID, &c.CommentText, &c.ParentID, &c.PostID, &c.UserID); err != nil {
 		return nil, logerror(err)
 	}
 	return &c, nil
+}
+
+// CommentByParentID retrieves a row from 'captureamoment.comment' as a Comment.
+//
+// Generated from index 'comment_ParentID_fk'.
+func CommentByParentID(ctx context.Context, db DB, parentID sql.NullInt64) ([]*Comment, error) {
+	// query
+	const sqlstr = `SELECT ` +
+		`CommentID, CommentText, ParentID, PostID, UserID ` +
+		`FROM captureamoment.comment ` +
+		`WHERE ParentID = ?`
+	// run
+	logf(sqlstr, parentID)
+	rows, err := db.QueryContext(ctx, sqlstr, parentID)
+	if err != nil {
+		return nil, logerror(err)
+	}
+	defer rows.Close()
+	// process
+	var res []*Comment
+	for rows.Next() {
+		c := Comment{
+			_exists: true,
+		}
+		// scan
+		if err := rows.Scan(&c.CommentID, &c.CommentText, &c.ParentID, &c.PostID, &c.UserID); err != nil {
+			return nil, logerror(err)
+		}
+		res = append(res, &c)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, logerror(err)
+	}
+	return res, nil
+}
+
+// Comment returns the Comment associated with the Comment's (ParentID).
+//
+// Generated from foreign key 'comment_ParentID_fk'.
+func (c *Comment) Comment(ctx context.Context, db DB) (*Comment, error) {
+	return CommentByCommentID(ctx, db, int(c.ParentID.Int64))
 }
 
 // Post returns the Post associated with the Comment's (PostID).

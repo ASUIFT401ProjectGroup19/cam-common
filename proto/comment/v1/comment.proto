@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package comment.v1;
+
+option go_package = "github.com/ASUIFT401ProjectGroup19/cam-common/pkg/gen/proto/go/comment/v1;commentv1";
+
+import "validate/validate.proto";
+
+message Comment {
+  int32 id = 1;
+  string content = 2 [ (validate.rules).string.max_len = 500 ];
+  int32 parent_id = 3;
+  int32 post_id = 4;
+  int32 user_id = 5;
+}

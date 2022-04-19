@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+package comment.v1;
+
+option go_package = "github.com/ASUIFT401ProjectGroup19/cam-common/pkg/gen/proto/go/comment/v1;commentv1";
+
+import "google/api/annotations.proto";
+import "comment/v1/comment.proto";
+
+service CommentService {
+  rpc Create (CreateRequest) returns(CreateResponse){
+    option(google.api.http) = {
+      post: "/comment/v1/create"
+      body: "*"
+    };
+  }
+  rpc Read(ReadRequest) returns(ReadResponse){
+    option(google.api.http) = {
+      get: "/comment/v1/read/{id}"
+    };
+  }
+  rpc Update(UpdateRequest) returns(UpdateResponse){
+    option(google.api.http) = {
+      patch: "/comment/v1/update"
+      body: "*"
+    };
+  }
+  rpc Delete(DeleteRequest) returns(DeleteResponse){
+    option(google.api.http) = {
+      delete: "/comment/v1/delete/{id}"
+    };
+  }
+  rpc CommentsByPost(CommentsByPostRequest) returns(CommentsByPostResponse){
+    option(google.api.http) = {
+      get: "/comment/v1/comments/{id}"
+    };
+  }
+}
+
+message CreateRequest{
+  Comment comment = 1;
+}
+
+message CreateResponse{
+  int32 id = 1;
+}
+
+message ReadRequest{
+  int32 id = 1;
+}
+
+message ReadResponse{
+  Comment comment = 1;
+}
+
+message UpdateRequest{
+  Comment comment = 1;
+}
+
+message UpdateResponse{
+  int32 id = 1;
+  bool success = 2;
+}
+
+message DeleteRequest{
+  int32 id = 1;
+}
+
+message DeleteResponse{
+  bool success = 1;
+}
+
+message CommentsByPostRequest{
+  int32 id = 1;
+}
+
+message CommentsByPostResponse{
+  repeated Comment comments = 1;
+}

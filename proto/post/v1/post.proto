@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package post.v1;
 
+import "comment/v1/comment.proto";
 import "post/v1/media.proto";
 
 option go_package = "github.com/ASUIFT401ProjectGroup19/cam-common/pkg/gen/proto/go/post/v1;postv1";
@@ -10,4 +11,5 @@ message Post {
   int32 id = 1;
   string description = 2;
   repeated Media media = 3;
+  repeated comment.v1.Comment comments = 4 ;
 }

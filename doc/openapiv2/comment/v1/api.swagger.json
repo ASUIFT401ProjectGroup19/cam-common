@@ -1,12 +1,12 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "post/v1/api.proto",
+    "title": "comment/v1/api.proto",
     "version": "version not set"
   },
   "tags": [
     {
-      "name": "PostService"
+      "name": "CommentService"
     }
   ],
   "consumes": [
@@ -16,77 +16,14 @@
     "application/json"
   ],
   "paths": {
-    "/post/v1/create": {
-      "post": {
-        "operationId": "PostService_Create",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/postv1CreateResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/postv1CreateRequest"
-            }
-          }
-        ],
-        "tags": [
-          "PostService"
-        ]
-      }
-    },
-    "/post/v1/delete/{id}": {
-      "delete": {
-        "operationId": "PostService_Delete",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/postv1DeleteResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "tags": [
-          "PostService"
-        ]
-      }
-    },
-    "/post/v1/read/{id}": {
+    "/comment/v1/comments/{id}": {
       "get": {
-        "operationId": "PostService_Read",
+        "operationId": "CommentService_CommentsByPost",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/postv1ReadResponse"
+              "$ref": "#/definitions/v1CommentsByPostResponse"
             }
           },
           "default": {
@@ -106,18 +43,18 @@
           }
         ],
         "tags": [
-          "PostService"
+          "CommentService"
         ]
       }
     },
-    "/post/v1/update": {
-      "patch": {
-        "operationId": "PostService_Update",
+    "/comment/v1/create": {
+      "post": {
+        "operationId": "CommentService_Create",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/postv1UpdateResponse"
+              "$ref": "#/definitions/commentv1CreateResponse"
             }
           },
           "default": {
@@ -133,26 +70,120 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/postv1UpdateRequest"
+              "$ref": "#/definitions/commentv1CreateRequest"
             }
           }
         ],
         "tags": [
-          "PostService"
+          "CommentService"
+        ]
+      }
+    },
+    "/comment/v1/delete/{id}": {
+      "delete": {
+        "operationId": "CommentService_Delete",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/commentv1DeleteResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "CommentService"
+        ]
+      }
+    },
+    "/comment/v1/read/{id}": {
+      "get": {
+        "operationId": "CommentService_Read",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/commentv1ReadResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "CommentService"
+        ]
+      }
+    },
+    "/comment/v1/update": {
+      "patch": {
+        "operationId": "CommentService_Update",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/commentv1UpdateResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/commentv1UpdateRequest"
+            }
+          }
+        ],
+        "tags": [
+          "CommentService"
         ]
       }
     }
   },
   "definitions": {
-    "postv1CreateRequest": {
+    "commentv1CreateRequest": {
       "type": "object",
       "properties": {
-        "post": {
-          "$ref": "#/definitions/v1Post"
+        "comment": {
+          "$ref": "#/definitions/v1Comment"
         }
       }
     },
-    "postv1CreateResponse": {
+    "commentv1CreateResponse": {
       "type": "object",
       "properties": {
         "id": {
@@ -161,7 +192,7 @@
         }
       }
     },
-    "postv1DeleteResponse": {
+    "commentv1DeleteResponse": {
       "type": "object",
       "properties": {
         "success": {
@@ -169,23 +200,23 @@
         }
       }
     },
-    "postv1ReadResponse": {
+    "commentv1ReadResponse": {
       "type": "object",
       "properties": {
-        "post": {
-          "$ref": "#/definitions/v1Post"
+        "comment": {
+          "$ref": "#/definitions/v1Comment"
         }
       }
     },
-    "postv1UpdateRequest": {
+    "commentv1UpdateRequest": {
       "type": "object",
       "properties": {
-        "post": {
-          "$ref": "#/definitions/v1Post"
+        "comment": {
+          "$ref": "#/definitions/v1Comment"
         }
       }
     },
-    "postv1UpdateResponse": {
+    "commentv1UpdateResponse": {
       "type": "object",
       "properties": {
         "id": {
@@ -248,30 +279,9 @@
         }
       }
     },
-    "v1Media": {
+    "v1CommentsByPostResponse": {
       "type": "object",
       "properties": {
-        "link": {
-          "type": "string"
-        }
-      }
-    },
-    "v1Post": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "description": {
-          "type": "string"
-        },
-        "media": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/v1Media"
-          }
-        },
         "comments": {
           "type": "array",
           "items": {

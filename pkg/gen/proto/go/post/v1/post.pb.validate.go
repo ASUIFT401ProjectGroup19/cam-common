@@ -128,6 +128,10 @@ func (m *Post) validate(all bool) error {
 
 	}
 
+	// no validation rules for UserId
+
+	// no validation rules for UserName
+
 	if len(errors) > 0 {
 		return PostMultiError(errors)
 	}

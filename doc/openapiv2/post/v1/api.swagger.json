@@ -245,6 +245,9 @@
         "userId": {
           "type": "integer",
           "format": "int32"
+        },
+        "userName": {
+          "type": "string"
         }
       }
     },
@@ -277,6 +280,13 @@
           "items": {
             "$ref": "#/definitions/v1Comment"
           }
+        },
+        "userId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "userName": {
+          "type": "string"
         }
       }
     }

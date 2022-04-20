@@ -276,6 +276,9 @@
         "userId": {
           "type": "integer",
           "format": "int32"
+        },
+        "userName": {
+          "type": "string"
         }
       }
     },

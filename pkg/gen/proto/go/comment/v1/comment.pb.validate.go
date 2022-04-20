@@ -75,6 +75,8 @@ func (m *Comment) validate(all bool) error {
 
 	// no validation rules for UserId
 
+	// no validation rules for UserName
+
 	if len(errors) > 0 {
 		return CommentMultiError(errors)
 	}

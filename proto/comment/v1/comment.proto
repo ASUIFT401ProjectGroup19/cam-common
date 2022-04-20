@@ -12,4 +12,5 @@ message Comment {
   int32 parent_id = 3;
   int32 post_id = 4;
   int32 user_id = 5;
+  string user_name = 6;
 }
